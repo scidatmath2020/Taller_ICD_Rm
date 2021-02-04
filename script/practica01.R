@@ -176,4 +176,119 @@ duplicated(conta_sin_dupl)
 
 conta0[26,]
 
+#############
 
+help(rivers)
+
+boxplot(rivers,horizontal=TRUE)
+
+boxplot.stats(rivers)$out
+
+View(rivers)
+
+rivers[rivers %in% as.vector(boxplot.stats(rivers)$out)]
+
+rivers_data <- data.frame(rivers)
+
+rivers_data[rivers_data[,1] %in% as.vector(boxplot.stats(rivers_data[,1])$out),]
+  
+  
+as.vector(boxplot.stats(rivers_data[,1])$out)
+
+boxplot.stats(rivers_data[,1])$out
+
+boxplot(rivers,horizontal=TRUE)
+
+minimo1 <- min(boxplot.stats(rivers)$out)
+rivers1 <- rivers[rivers<minimo1]
+boxplot(rivers1,horizontal=TRUE)
+
+
+minimo2 <- min(boxplot.stats(rivers1)$out)
+rivers2 <- rivers1[rivers1<minimo2]
+boxplot(rivers2,horizontal=TRUE)
+
+minimo3 <- min(boxplot.stats(rivers2)$out)
+rivers3 <- rivers2[rivers2<minimo3]
+boxplot(rivers3,horizontal=TRUE)
+
+
+rivers_1 <- rivers[rivers<max(boxplot.stats(rivers)$out)]
+boxplot(rivers_1,horizontal=TRUE)
+
+rivers_2 <- rivers_1[rivers_1<max(boxplot.stats(rivers_1)$out)]
+boxplot(rivers_2,horizontal=TRUE)
+
+
+boxplot(maraton[,c(3,5)])
+
+install.packages("scales")
+library(scales)
+
+View(rescale(maraton$age))
+
+### El reescalamiento de valores consiste en tomar cada valor x y aplicar la 
+### fórmula (x-x_min)/(x_max-x_min)
+
+
+min(maraton$age)
+max(maraton$age)
+
+(maraton$age-min(maraton$age))/(max(maraton$age)-min(maraton$age))
+
+### La normalización de valores consiste en tomar cada valor x y aplicar la
+### fórmula (x-media)/desv
+
+names(maraton)
+
+graficador <- function(x){
+  boxplot(rescale(x))
+}
+
+reescalado <- sapply(maraton[,c(3,5)],rescale)
+
+View(reescalado)
+
+boxplot(reescalado)
+
+lista_graficas <- lapply(maraton[,c(3,5)],graficador)
+
+lista_graficas[[2]]
+
+####################
+
+sort(latam$place)
+order(latam$place)
+
+View(latam[order(latam$place),])
+
+summary(latam$home)
+
+#### Quiénes son los tres peruanos más rápidos
+
+per <- latam[latam$home == "PER",]
+
+per[order(per$place),][1:3,]
+
+A <- data.frame(V1=c("a","b","a","c"),V2=c(5,3,2,1))
+
+A[order(A$V1,A$V2),]
+
+A[order(A$V1,A$V2,decreasing = c("TRUE","FALSE")),]
+
+tapply(A$V2,A$V1,mean)
+
+B <- data.frame(V1=c("a","b","a","c","b","b","c"),
+                V2=c(5,3,2,1,3,2,4),
+                V3=c("h","m","m","h","h","m","m"))
+
+tapply(B$V2,list(B$V1=="a",B$V3),sum)
+
+rbind(A,B[,c(1,2)])
+
+
+L=list(A,B[,-3])
+
+L[[2]]
+
+do.call(rbind,L)
