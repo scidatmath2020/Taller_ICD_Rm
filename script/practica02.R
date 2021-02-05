@@ -71,3 +71,48 @@ for(i in 1:40)
 
 indices <- c(1:40)
 lapply(indices,escritura)
+
+#######################################
+
+
+dir()
+
+Tablas <- list()
+for(i in 1:40)
+{
+  Tablas[[i]] <- read.csv(dir()[i],row.names = TRUE)
+}
+
+View(Tablas[[1]])
+
+
+Lista <- list(1,Tablas,c("hola","mundo"))
+
+covid_nva <- do.call(rbind,Tablas)
+
+dim(covid_nva)
+dim(covid)
+
+covid_nva <- covid_nva[,-1]
+
+dim(covid_nva)
+
+##########################
+install.packages("qcc")
+library(qcc)
+
+class(covid_nva$CLASIFICACION_FINAL)
+
+enfermos <- covid_nva[covid_nva$CLASIFICACION_FINAL %in% c(1:3),]
+
+dim(enfermos)
+
+enfermos$FAC <- 1
+
+# enfermos$ENTIDAD_RES entidad donde vive el paciente
+
+View(tapply(enfermos$FAC,enfermos$ENTIDAD_RES,sum))
+
+pareto.chart(tapply(enfermos$FAC,enfermos$ENTIDAD_RES,sum),col=rainbow(32))
+
+13/32
