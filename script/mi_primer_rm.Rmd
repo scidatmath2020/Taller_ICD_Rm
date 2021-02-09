@@ -1,0 +1,75 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+# El título de mayor tamaño se escribe con un sharp     
+
+Una alternativa al uso de un sharp es con símbolos de igual en la línea inmediata.
+
+Nuevo título de igual tamaño que con un sharp
+==============================================
+
+## Este es un subtítulo con dos sharps
+
+### Este es un subtítulo con tres sharps
+
+Vamos a trabajar ahora con formatos. La letra negrita se puede escribir con doble estrella o con doble guión bajo: **Este es un texto en negrita** y __este es otro__. 
+
+Además, también podemos escribir en cursivas (igualmente conocidas como itálicias). Esto se hace con una sola estrella al inicio y final o con un solo guión bajo al inicio y final: *este es un ejemplo* y _este es otro_.  
+
+Incluso, para tachar texto usamos doble virgulilla ~~como en este caso~~.
+
+Digamos que quiero escribir "x elevado al cuadrado". Esto lo hago con el símbolo de cuña (es una v invertida): x^2^. Asimismo, para subíndices se hace con virgulilla simple (abriendo y cerrando), como por ejemplo x~2~. Aunque con LaTeX es mas sencillo. Recordemos que ahí sería así: $x^2$ y $x_2$.
+
+
+Una de mis funciones favoritas de R es tapply. Su sintaxis es   `tapply(columna1,columna2,función)`.
+
+Todos aquí saben que nuestro repositorio se encuentra en <https://github.com/scidatmath2020>. En particular, el Taller de Introducción a Ciencia de datos lo tenemos [aquí, en este lugar](https://github.com/scidatmath2020/Taller_ICD_Rm).
+
+También podemos hacer listas:
+
+
+* Esta es una viñeta
+* Esta es otra
+    * Esta es una subviñeta de la anterior
+* Esta ya es la última.
+
+
+- Esta es una viñeta
+- Esta es otra
+    - Esta es una subviñeta de la anterior
+- Esta ya es la última.
+
+
+1. Esta es una lista numerada
+1. Este es el siguiente
+    1. Este es un subitem del anterior
+
+
+¡También podemos jugar con <span style="color:red">colores</span>! Y no solo con palabras, sino <span style="color:blue">también con frases completas</span>.
+
+
+El incrustado de imágenes es realmente muy simple: 
+
+<center>
+![Esta imagen es un ej/emplo](C:\Users\hp master\OneDrive\Escritorio\taller_icd_rm\envipe_clase\ts_total_2011.png)
+
+
+
+Para crear tablas manualmente el procedimiento es el siguiente:
+
+Columna 1|Columna 2|Columna 3
+:--:|:--:|:--:
+ab     | 3 | xy
+Héctor | 27 | abc
+SciData| 30 | **Hola**
+
+# Un título con colores y negrita
+
+# **<span style="color:red">Un título con colores y negrita</span>**
+
+Tenemos que pagar &euro;300, porque perdimos y 3&lt;1
+
+Digamos que `r 2+3`; 
+</center>
