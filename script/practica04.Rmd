@@ -1,0 +1,79 @@
+---
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+setwd("C:\\Users\\hp master\\OneDrive\\Escritorio\\taller_icd_rm")
+maraton <- read.csv("Maraton_NY.csv")
+paises_lat <- c("MEX","BRA","ARG","PER","VEN","PAR")
+paises_otro <- c("GER","NED","SWE")
+paises <- list(paises_lat,paises_otro)
+indice=1
+```
+
+
+# Chunks 
+
+
+Las chunks son *piezas de código* dentro de **RMarkdown**. 
+
+<br>
+
+## Chunks en párrafos.
+
+Podemos utilizar chunks *en párrafos*. Un ejemplo de esto es el siguiente valor `r pi`. Esto se puede combinar con LaTex para formar escritos elegantes: $\pi= `r pi`$. Es más, *si nos queremos ver exquisitos*, el valor de $e^2$ redondeado a tres decimales es $`r round(exp(1)^2,3)`$.
+
+## Chunks *grandes*
+
+* **echo=FALSE** significa que no muestre las órdenes del código
+
+* **warning=FALSE** significa que no muestre las advertencias.
+
+* **error=FALSE** significa que no muestre los errores.
+
+```{r, echo=FALSE,warning=FALSE,error=FALSE}
+sqrt(-3:3)
+```
+
+
+Las configuraciones de las chunks se pueden ver en la dirección <https:yihui.name/knitr/options/>
+
+Los resultados anteriores se obtuvieron con el siguiente código
+```{r, eval=FALSE}
+tapply(col1,col2_de_discrminacion,funcion)
+```
+
+Las dimensiones de la tabla maraton son `r ncol(maraton)` columnas con `r nrow(maraton)` filas.
+
+```{r latinoamericanos,echo=FALSE}
+tabla_auxiliar <- maraton[maraton$home%in%paises[[indice]],]
+head(tabla_auxiliar,5)
+```
+
+El promedio de tiempo de estos países es `r mean(tabla_auxiliar$time)`.
+
+En la siguiente gráfica se muestra la relación entre edad y tiempo.
+
+
+```{r,fig.height=4,fig.width=4}
+plot(tabla_auxiliar$age,tabla_auxiliar$time,main="Grafico")
+```
+
+```{r,out.width='40%'}
+plot(tabla_auxiliar$age,tabla_auxiliar$time,main="Grafico")
+```
+
+```{r,out.width='40%',fig.align='center'}
+plot(tabla_auxiliar$age,tabla_auxiliar$time,main="Grafico")
+```
+
+
+### Tablas
+
+```{r}
+knitr::kable(tabla_auxiliar,caption="Tabla de paises",align="lcrccc")
+```
