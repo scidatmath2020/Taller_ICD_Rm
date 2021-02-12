@@ -1,0 +1,142 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("C:\\Users\\hp master\\OneDrive\\Escritorio\\taller_icd_rm\\informes")
+load("envipe_2020.RData")
+
+tmod_vic$ID <- paste(tmod_vic$UPM,tmod_vic$VIV_SEL,tmod_vic$HOGAR,tmod_vic$R_SEL,sep="_")
+tper_vic$ID <- paste(tper_vic$UPM,tper_vic$VIV_SEL,tper_vic$HOGAR,tper_vic$R_SEL,sep="_")
+
+tper_vic$CONDICION_VICTIMA <- ifelse(tper_vic$ID %in% tmod_vic$ID,1,0)
+
+tper_vic$FAC_ELE <- as.numeric(as.character(tper_vic$FAC_ELE))
+tmod_vic$FAC_DEL <- as.numeric(as.character(tmod_vic$FAC_DEL))
+
+num_entidad = 21
+nom_entidad <- catalogo_entidades[num_entidad,2]
+cod_entidad <- catalogo_entidades[num_entidad,1]
+
+tper_vic_aux <- tper_vic[tper_vic$NOM_ENT == nom_entidad,]
+tmod_vic_aux <- tmod_vic[as.character(tmod_vic$BP1_2C) == as.character(cod_entidad),]
+
+formateo_abs <- function(x){format(x,nsmall=0,big.mark=",")}
+formateo_rel <- function(x){format(round(x,2),nsmall=0,big.mark=",")}
+```
+<center>
+# Informe de delincuencia en `r nom_entidad`
+</center>
+<br>
+<br>
+```{r, echo = FALSE,message=FALSE,warning=FALSE}
+library(tidyverse)
+
+victimas_loc <- tapply(tper_vic_aux$FAC_ELE,tper_vic_aux$CONDICION_VICTIMA,sum)[2]
+
+poblacion_loc <- sum(tper_vic_aux$FAC_ELE)
+
+victimas_nal <- tapply(tper_vic$FAC_ELE,tper_vic$CONDICION_VICTIMA,sum)[2]
+
+poblacion_nal <- sum(tper_vic$FAC_ELE)
+
+victimas_hombres_loc <- tapply(tper_vic_aux$FAC_ELE,list(tper_vic_aux$CONDICION_VICTIMA,tper_vic_aux$SEXO),sum)[2,1]
+
+victimas_mujeres_loc <- tapply(tper_vic_aux$FAC_ELE,list(tper_vic_aux$CONDICION_VICTIMA,tper_vic_aux$SEXO),sum)[2,2]
+```
+
+A partir de la ENVIPE 2020, se estima que el número de víctimas de delito residentes en `r nom_entidad`, mayores de 18 años, fue de `r formateo_abs(victimas_loc)`. Además, por cada 100,000 habitantes, la tasa de prevalencia delictiva fue de <span style="color:red">`r formateo_abs(victimas_loc*100000/poblacion_loc)`</span>. A nivel nacional, este mismo índice se ha estimado en **`r formateo_abs(victimas_nal*100000/poblacion_nal)`**.
+
+<br>
+
+Del total de víctimas en `r nom_entidad`, la ENVIPE estima que `r formateo_abs(victimas_hombres_loc)` son hombres y `r formateo_abs(victimas_mujeres_loc)` son mujeres. Esta proporción puede verse en la siguiente gráfica.
+
+<br>
+
+```{r,echo=FALSE,fig.align='center',out.width='50%'}
+tabla_loc <- tapply(tper_vic_aux$FAC_ELE,list(tper_vic_aux$CONDICION_VICTIMA,tper_vic_aux$SEXO),sum)[2,]*100/victimas_loc
+
+tabla_nal <- tapply(tper_vic$FAC_ELE,list(tper_vic$CONDICION_VICTIMA,tper_vic$SEXO),sum)[2,]*100/victimas_nal
+
+tabla <- data.frame("LOC"=c(as.character(nom_entidad),as.character(nom_entidad),"Nacional","Nacional"),                    "Victimas"=c(tabla_loc,tabla_nal),                 "Sexo"=c("Hombres","Mujeres","Hombres","Mujeres"))
+
+ggplot(data=tabla,aes(x=LOC,y=Victimas,fill=Sexo))+
+  geom_bar(stat = "identity",width = 0.5,position=position_dodge()) + labs(title="Distribución de víctimas por sexo",x="Localidad",y="Víctimas(%)") 
+  
+```
+
+<br>
+
+La siguiente tabla muestra los 5 delitos más frecuentes para población de 18 años o más en `r nom_entidad`.
+
+```{r,echo=FALSE}
+freq_delitos <- data.frame(tapply(tmod_vic_aux$FAC_DEL,tmod_vic_aux$DESCRIPCION,sum))
+freq_delitos <- data.frame("delito"=row.names(freq_delitos),"absolutos"=freq_delitos[,1],"relativos"=round(freq_delitos[,1]*100/sum(freq_delitos[,1],na.rm=TRUE),2))
+
+
+delitos<-freq_delitos[order(freq_delitos[,2],decreasing = TRUE),][1:5,]
+delitos$delito<-as.character(delitos$delito)
+
+delitos <- rbind(delitos,c("TOTAL",colSums(delitos[,2:3])))
+delitos$absolutos <- as.numeric(delitos$absolutos)
+delitos$relativos <- as.numeric(delitos$relativos)
+
+
+names(delitos) <-c("Delito","Absoluto","Relativo(%)")
+
+cap=paste("Los 5 delitos mas frecuentes en ",nom_entidad)
+
+knitr::kable(delitos,caption=cap,row.names=FALSE,format.args = list(big.mark=" "))
+```
+
+<br>
+
+```{r,echo=FALSE}
+total_del_loc <- sum(tmod_vic_aux$FAC_DEL)
+
+observacion_loc <- tapply(tmod_vic_aux$FAC_DEL,tmod_vic_aux$BP1_6=="1" & tmod_vic_aux$BP1_7=="1",sum)[2]
+
+agresion_loc <- tapply(tmod_vic_aux$FAC_DEL,tmod_vic_aux$BP1_17=="1" | tmod_vic_aux$BP1_18=="1",sum)[2]
+
+total_del_nal <- sum(tmod_vic$FAC_DEL)
+
+observacion_nal <- tapply(tmod_vic$FAC_DEL,tmod_vic$BP1_6=="1" & tmod_vic$BP1_7=="1",sum)[2]
+
+```
+
+De los `r formateo_abs(total_del_loc)` delitos cometidos en `r nom_entidad`, la víctima estuvo presente en el `r formateo_rel(observacion_loc*100/total_del_loc)`% de los casos, lo que representa `r formateo_abs(observacion_loc)` delitos en términos absolutos con condición afirmativa de haber estado presente al momento del acto. De estos, en el `r formateo_rel(agresion_loc*100/observacion_loc)`% de los casos hubo algún tipo de agresión. A nivel nacional, se estima que en el `r formateo_rel(observacion_nal*100/total_del_nal)`% la víctima estuvo presente durante la ejecución del delito.
+
+<br>
+
+```{r,echo=FALSE}
+condicion_dano <- tmod_vic_aux[!(as.numeric(tmod_vic_aux$BP1_33)%in%c(5,9)),]
+
+condicion_dano_econ <- tmod_vic_aux[as.numeric(tmod_vic_aux$BP1_33)%in%c(1),]
+
+victimas_dano_loc <- tper_vic_aux[tper_vic_aux$ID %in% unique(condicion_dano$ID),]
+
+total_victimas_dano_loc <- sum(victimas_dano_loc$FAC_ELE)
+
+victimas_dano_econ_loc <- tper_vic_aux[tper_vic_aux$ID %in% unique(condicion_dano_econ$ID),]
+
+total_victimas_dano_econ_loc <- sum(victimas_dano_econ_loc$FAC_ELE)
+```
+
+De los `r formateo_abs(total_del_loc)` delitos estimados en `r nom_entidad`, el `r formateo_rel(total_victimas_dano_loc*100/victimas_loc)`% de las víctimas manifestó haber sufrido algún daño. Se estima que en un total de `r formateo_abs(total_victimas_dano_econ_loc)` víctimas el principal tipo de daño fue económico, lo que representa el `r formateo_rel(total_victimas_dano_econ_loc*100/total_victimas_dano_loc)`% de las víctimas que sufrieron algún tipo de daño.
+
+<br>
+
+```{r,echo=FALSE}
+delitos_perdidas_loc <- tmod_vic_aux[as.numeric(tmod_vic_aux$BP1_34)!=9999999,]
+
+perdida_total_loc<-sum(delitos_perdidas_loc$FAC_DEL*as.numeric(delitos_perdidas_loc$BP1_34),na.rm=TRUE)
+```
+
+Finalmente, la ENVIPE 2020 permite estimar que en `r nom_entidad`, el costo total  a consecuencia de la inseguridad y el delito representó un monto de `r format(round(perdida_total_loc/1000000,2),nsmall=0)` millones de pesos, sin incluir daños a la salud. 
+
+```{r ,include=FALSE,echo=FALSE}
+salida <-paste0("informe_",nom_entidad,".html")
+file.rename("generador.html",salida)
+```
